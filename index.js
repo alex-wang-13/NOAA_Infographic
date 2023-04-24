@@ -74,18 +74,18 @@ $.getJSON(url, function (rawData) {
   });
 
   // Iterate through the values in the data
-  Object.values(data).forEach((value, index) => {
+  /*Object.values(data).forEach((value, index) => {
     ctx.save();
     ctx.translate(canvasWidth / 2, canvasHeight / 2);
-    var angle = (index * Math.PI) / 6;
+    var angle = (((index - 2) % 12) * Math.PI) / 6;
     ctx.rotate(angle);
-
     ctx.restore();
-  });
+  });*/
+
+  [0.3, 0.5, 1.2, -0.5].forEach((value, index) => {});
 });
 
 // Color backgrounds
-$('#title').css('background-color', 'dimgray');
+$('body').ready().css('background-color', 'slategray');
+$('#title').ready().css('background-color', 'gray');
 //$('#graph').css('background-color', '#DDDDFF');
-
-$("body").ready().css("background-color", "darkslategray");
