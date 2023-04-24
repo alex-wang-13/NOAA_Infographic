@@ -41,5 +41,5 @@ $.getJSON(url, function (data) {
 });
 
 // Color backgrounds
-$('#title').css('background-color', '#08FFFF').text('Title');
-$("#graph").css('background-color', "#DDDDDDDD").width("100%");
+$('#title').css('background-color', '#08FFFF');
+$('#graph').css('background-color', '#DDDDDDDD');
