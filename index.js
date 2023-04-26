@@ -52,6 +52,7 @@ $.getJSON(url, function (rawData) {
   const description = rawData['description'];
   const data = rawData['data'];
   console.log(description);
+  
   // Color hmtl elements
   $('#title')
     .css('background-color', 'lightgray')
