@@ -52,6 +52,10 @@ $.getJSON(url, function (rawData) {
   const description = rawData['description'];
   const data = rawData['data'];
 
+  // Color hmtl elements
+  $('#title').css('background-color', 'dimgray').text(description['title']);
+  $('body').ready().css('background-color', 'black');
+
   // Get the canvas
   var canvas = $('#graph')[0];
   var ctx = canvas.getContext('2d');
@@ -176,9 +180,3 @@ $.getJSON(url, function (rawData) {
     }, index * 20); // Set a pause between each stroke of the animation
   });
 });
-
-// Color backgrounds
-$('#title').css('background-color', 'dimgray');
-//$('#graph').css('background-color', '#DDDDFF');
-
-$('body').ready().css('background-color', 'black');
