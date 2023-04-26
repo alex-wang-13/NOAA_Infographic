@@ -42,11 +42,22 @@ $.getJSON(url, function (rawData) {
   ctx.arc(canvasHeight / 2, canvasWidth / 2, outerRadius, 0, 2 * Math.PI, true);
   ctx.stroke();
 
+  // Add y-labels
+  ctx.save();
+  ctx.font = outerRadius * 0.05 + 'px arial';
+  ctx.translate(canvasWidth / 2, canvasHeight / 2);
+  const offset = innerRadius * 0.1;
+  ctx.fillText('-1℃', innerRadius + offset, 0);
+  ctx.fillText('-1℃', centerRadius + offset, 0);
+  ctx.fillText('-1℃', outerRadius + offset, 0);
+  ctx.restore();
+
   // Making month labels
-  ctx.font = outerRadius * 0.1 + 'px arial';
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
   const months = [
+    'Jan',
+    'Feb',
     'Mar',
     'Apr',
     'May',
@@ -57,35 +68,44 @@ $.getJSON(url, function (rawData) {
     'Oct',
     'Nov',
     'Dec',
-    'Jan',
-    'Feb',
   ];
   months.forEach((month, index) => {
     // Save the original position of the Canvas
     ctx.save();
+    ctx.font = outerRadius * 0.1 + 'px arial';
     // Center Canvas
     ctx.translate(canvasWidth / 2, canvasHeight / 2);
     // Rotate and fill text
     var angle = (index * Math.PI) / 6;
     ctx.rotate(angle);
-    ctx.fillText(month, outerRadius * 1.2, 0);
+    ctx.fillText(month, 0, -outerRadius * 1.2);
     // Restore the saved state of the Canvas
     ctx.restore();
   });
 
   // Iterate through the values in the data
-  /*Object.values(data).forEach((value, index) => {
-    ctx.save();
-    ctx.translate(canvasWidth / 2, canvasHeight / 2);
-    var angle = (((index - 2) % 12) * Math.PI) / 6;
-    ctx.rotate(angle);
-    ctx.restore();
-  });*/
+  Object.values(data).forEach((value, index) => {
+    if (index < 10) {
+      ctx.save();
+      ctx.translate(canvasWidth / 2, canvasHeight / 2);
+      var angle = (index * Math.PI) / 6;
+      ctx.rotate(angle);
 
-  [0.3, 0.5, 1.2, -0.5].forEach((value, index) => {});
+      ctx.restore();
+    }
+  });
+
+  // Test
+  /*ctx.beginPath();
+  ctx.moveTo(centerRadius, 300);
+  ctx.lineTo(300, 400);
+  ctx.stroke();
+  ctx.lineTo(220, 350);
+  ctx.stroke();*/
 });
 
 // Color backgrounds
-$('body').ready().css('background-color', 'slategray');
-$('#title').ready().css('background-color', 'gray');
+$('#title').css('background-color', 'dimgray');
 //$('#graph').css('background-color', '#DDDDFF');
+
+$('body').ready().css('background-color', 'darkslategray');
