@@ -8,8 +8,9 @@ const innerRadius =
   canvasHeight < canvasWidth ? canvasHeight / 8 : canvasWidth / 8;
 const centerRadius = innerRadius * 2;
 const outerRadius = innerRadius * 3;
-const warmColor = '#FF0000';
-const coolColer = '#0000FF';
+const warmColor = '#FA0000';
+//const coolColor = '#66C6CC';
+const coolColor = '#0000FF';
 
 // Performs a linear interpolation
 function lerp(a, b, t) {
@@ -17,27 +18,31 @@ function lerp(a, b, t) {
 }
 
 // Performs lerp between two color values
-function lerpColor(a, b, t) {
-  // Convert the color values to integers
-  const r1 = parseInt(a.substring(1, 3), 16);
-  const g1 = parseInt(a.substring(3, 5), 16);
-  const b1 = parseInt(a.substring(5, 7), 16);
-  const r2 = parseInt(b.substring(1, 3), 16);
-  const g2 = parseInt(b.substring(3, 5), 16);
-  const b2 = parseInt(b.substring(5, 7), 16);
+function interpolateColor(color1, color2, value) {
+  // Convert hex colors to RGB
+  const r1 = parseInt(color1.substring(1, 3), 16);
+  const g1 = parseInt(color1.substring(3, 5), 16);
+  const b1 = parseInt(color1.substring(5, 7), 16);
+  const r2 = parseInt(color2.substring(1, 3), 16);
+  const g2 = parseInt(color2.substring(3, 5), 16);
+  const b2 = parseInt(color2.substring(5, 7), 16);
 
-  // Interpolate each color channel separately
-  const red = Math.round(lerp(r1, r2, t));
-  const green = Math.round(lerp(g1, g2, t));
-  const blue = Math.round(lerp(b1, b2, t));
+  // Interpolate RGB values
+  const r = Math.round(r1 + (r2 - r1) * value);
+  const g = Math.round(g1 + (g2 - g1) * value);
+  const b = Math.round(b1 + (b2 - b1) * value);
 
-  // Convert the interpolated color back to hex format
-  return (
-    '#' +
-    red.toString(16).padStart(2, '0') +
-    green.toString(16).padStart(2, '0') +
-    blue.toString(16).padStart(2, '0')
-  );
+  // Convert back to hex
+  const hex = '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+  return hex;
+}
+
+// Calculates the interpolated value given an upper and lower bound
+function getInterpolationValue(lowerBound, upperBound, value) {
+  const range = upperBound - lowerBound;
+  const adjustedValue = value - lowerBound;
+  const interpolationValue = adjustedValue / range;
+  return interpolationValue;
 }
 
 let url =
@@ -46,7 +51,6 @@ let url =
 $.getJSON(url, function (rawData) {
   const description = rawData['description'];
   const data = rawData['data'];
-  console.log(data);
 
   // Get the canvas
   var canvas = $('#graph')[0];
@@ -83,8 +87,8 @@ $.getJSON(url, function (rawData) {
   ctx.translate(canvasWidth / 2, canvasHeight / 2);
   const offset = innerRadius * 0.1;
   ctx.fillText('-1℃', innerRadius + offset, 0);
-  ctx.fillText('-1℃', centerRadius + offset, 0);
-  ctx.fillText('-1℃', outerRadius + offset, 0);
+  ctx.fillText('0℃', centerRadius + offset, 0);
+  ctx.fillText('1℃', outerRadius + offset, 0);
   ctx.restore();
 
   // Making month labels
@@ -121,6 +125,9 @@ $.getJSON(url, function (rawData) {
   // Iterate through the values in the data
   Object.values(data).forEach(function (value, index) {
     setTimeout(function () {
+      // Save year for later
+      var year = Object.keys(data)[index].slice(0, 4);
+
       ctx.save();
       // Update the center of the graph to the center of the circles
       ctx.translate(canvasWidth / 2, canvasHeight / 2);
@@ -133,21 +140,40 @@ $.getJSON(url, function (rawData) {
         // Reduce the index to a value 0 to 12 (simplifying math)
         index = index % 12;
         // Find the angle of the new point
-        var angle = (index * Math.PI) / 6;
+        var angle = ((index - 3) * Math.PI) / 6;
         // Find the radius to plot
         var radius = lerp(centerRadius, outerRadius, value);
         // Find the corresponding x and y values
         var x = radius * Math.cos(angle);
+        var y = radius * Math.sin(angle);
 
-        // TODO: fix below
-        ctx.rotate(angle);
-        // Use linear interpolation to calculate distance from center
-        ctx.lineTo(0, -lerp(centerRadius, outerRadius, value));
+        // Create a line to x, y
+        ctx.lineTo(x, y);
         ctx.lineWidth = 1;
+        var style = interpolateColor(
+          coolColor,
+          warmColor,
+          getInterpolationValue(innerRadius, outerRadius, radius)
+        );
+        ctx.strokeStyle = style;
         ctx.stroke();
+
+        // Handle year in center of chart
+        if (index == 0) {
+          // Clear previous year
+          ctx.clearRect(-50, -35, 100, 70);
+          // Update year in center of chart
+          ctx.font = '36px arial';
+          ctx.fillStyle = interpolateColor(style, '#FFFFFF', 0.5);
+          ctx.fillText(year, 0, 0);
+        }
+
+        // Move start position to x, y
+        ctx.beginPath();
+        ctx.moveTo(x, y);
       }
       ctx.restore();
-    }, index * 100); // Set a pause between each stroke of the animation
+    }, index * 20); // Set a pause between each stroke of the animation
   });
 });
 
@@ -155,4 +181,4 @@ $.getJSON(url, function (rawData) {
 $('#title').css('background-color', 'dimgray');
 //$('#graph').css('background-color', '#DDDDFF');
 
-$('body').ready().css('background-color', 'darkslategray');
+$('body').ready().css('background-color', 'black');
