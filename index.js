@@ -51,12 +51,12 @@ let url =
 $.getJSON(url, function (rawData) {
   const description = rawData['description'];
   const data = rawData['data'];
-
+  console.log(description);
   // Color hmtl elements
   $('#title')
     .css('background-color', 'lightgray')
     .css('font-size', '24px')
-    .text(description['title']);
+    .text(description['title'] + ', 1900 - now');
   $('body').ready().css('background-color', 'black');
 
   // Get the canvas
@@ -130,7 +130,7 @@ $.getJSON(url, function (rawData) {
   });
 
   // Iterate through the values in the data
-  Object.values(data).forEach(function (value, index) {
+  Object.values(data).forEach(async function (value, index) {
     setTimeout(function () {
       // Save year for later
       var year = Object.keys(data)[index].slice(0, 4);
@@ -175,9 +175,15 @@ $.getJSON(url, function (rawData) {
           ctx.fillText(year, 0, 0);
         }
 
-        // Move start position to x, y
-        ctx.beginPath();
-        ctx.moveTo(x, y);
+        // Handle last year
+        if (year === '2023') {
+          // Message for when the animation is done
+          // console.log('done');
+        } else {
+          // Move start position to x, y
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+        }
       }
       ctx.restore();
     }, index * 10); // Set a pause between each stroke of the animation
