@@ -124,15 +124,23 @@ $.getJSON(url, function (rawData) {
       ctx.save();
       // Update the center of the graph to the center of the circles
       ctx.translate(canvasWidth / 2, canvasHeight / 2);
-      // Find the angle of the new point
-      var angle = (index * Math.PI) / 6;
-      ctx.rotate(angle);
       // Initialize the graph in the case of the first point
       if (index == 0) {
         // Use linear interpolation to calculate distance from center
         ctx.beginPath();
         ctx.moveTo(0, -lerp(centerRadius, outerRadius, value));
       } else {
+        // Reduce the index to a value 0 to 12 (simplifying math)
+        index = index % 12;
+        // Find the angle of the new point
+        var angle = (index * Math.PI) / 6;
+        // Find the radius to plot
+        var radius = lerp(centerRadius, outerRadius, value);
+        // Find the corresponding x and y values
+        var x = radius * Math.cos(angle);
+
+        // TODO: fix below
+        ctx.rotate(angle);
         // Use linear interpolation to calculate distance from center
         ctx.lineTo(0, -lerp(centerRadius, outerRadius, value));
         ctx.lineWidth = 1;
