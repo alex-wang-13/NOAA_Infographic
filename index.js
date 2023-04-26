@@ -53,7 +53,10 @@ $.getJSON(url, function (rawData) {
   const data = rawData['data'];
 
   // Color hmtl elements
-  $('#title').css('background-color', 'dimgray').text(description['title']);
+  $('#title')
+    .css('background-color', 'lightgray')
+    .css('font-size', '24px')
+    .text(description['title']);
   $('body').ready().css('background-color', 'black');
 
   // Get the canvas
@@ -168,7 +171,7 @@ $.getJSON(url, function (rawData) {
           ctx.clearRect(-50, -35, 100, 70);
           // Update year in center of chart
           ctx.font = '36px arial';
-          ctx.fillStyle = interpolateColor(style, '#FFFFFF', 0.5);
+          ctx.fillStyle = interpolateColor(style, '#FFFFFF', 0.25);
           ctx.fillText(year, 0, 0);
         }
 
@@ -177,6 +180,6 @@ $.getJSON(url, function (rawData) {
         ctx.moveTo(x, y);
       }
       ctx.restore();
-    }, index * 20); // Set a pause between each stroke of the animation
+    }, index * 10); // Set a pause between each stroke of the animation
   });
 });
